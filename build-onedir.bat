@@ -10,7 +10,7 @@ for /f "delims=: tokens=*" %%A in ('findstr /b ::: "%~f0"') do @echo(%%A
 echo Starting build
 echo.
 pyinstaller cli.py ^
-    --name WasdInfo --icon icon.ico --noconfirm --noconsole --workspace=./build/onedir --distpath=./dist/onedir --onedir
+    --name WasdInfo --icon icon.ico --noconfirm --noconsole --workpath=./build/onedir --distpath=./dist/onedir --onedir
 echo.
 echo Finished build
 echo.
