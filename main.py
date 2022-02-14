@@ -1,3 +1,4 @@
+import enum
 import os
 import sys
 import win32api
@@ -9,6 +10,14 @@ from PyQt5.QtWidgets import *
 import settingsManager
 
 settings = settingsManager.getSettings()
+
+
+class MouseButton(enum.Enum):
+    def __str__(self):
+        return str(self.value)
+
+    Left = "LeftButton"
+    Right = "RightButton"
 
 
 class MouseDetector:
@@ -149,36 +158,39 @@ class WASDDetector:
         return self.__convertButtonState__(self.__equalCheck__(character))
 
 
-class WKeyFrame(QWidget):
-    def __init__(self, x, y, wasdDetector):
+class KeyFrame(QWidget):
+    def __init__(self, x, y, letter):
+        letter = letter.upper()
+        self.letter = letter
+        self.wasdDetector = WASDDetector()
+
         QWidget.__init__(self)
+
         self.setWindowFlags(
             QtCore.Qt.WindowStaysOnTopHint |
             QtCore.Qt.FramelessWindowHint |
             QtCore.Qt.X11BypassWindowManagerHint |
             QtCore.Qt.ToolTip
         )
-        self.setWindowOpacity(settings['Buttons']['W']['Opacity'])
-        self.setStyleSheet(settings['Buttons']['W']['Style'])
+        self.setWindowOpacity(settings['Buttons'][letter]['Opacity'])
+        self.setStyleSheet(settings['Buttons'][letter]['Style'])
         self.setGeometry(x, y, 75, 75)
         self.setDisabled(True)
         self.setMode(False)
 
-        self.label = QLabel(settings['Buttons']['W']['Text'], self)
+        self.label = QLabel(settings['Buttons'][letter]['Text'], self)
         self.label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.label.setStyleSheet(settings['Buttons']['W']['TextStyle'])
+        self.label.setStyleSheet(settings['Buttons'][letter]['TextStyle'])
         self.layout = QGridLayout()
         self.layout.addWidget(self.label, 0, 0)
         self.setLayout(self.layout)
-
-        self.wasdDetector = wasdDetector
 
         self.thread = threading.Thread(target=self.__updateLoop__)
         self.threadStarted = False
 
     def __update__(self):
-        self.setMode(self.wasdDetector.isWDown())
+        self.setMode(self.wasdDetector.isWhatDown(self.letter))
 
     def __updateLoop__(self):
         while True:
@@ -196,201 +208,48 @@ class WKeyFrame(QWidget):
 
     def setMode(self, mode):
         if mode:
-            self.setWindowOpacity(settings['Buttons']['W']['OpacityActive'])
+            self.setWindowOpacity(settings['Buttons'][self.letter]['OpacityActive'])
         else:
-            self.setWindowOpacity(settings['Buttons']['W']['Opacity'])
+            self.setWindowOpacity(settings['Buttons'][self.letter]['Opacity'])
         self.show()
 
 
-class AKeyFrame(QWidget):
-    def __init__(self, x, y, wasdDetector):
+class ButtonFrame(QWidget):
+    def __init__(self, x, y, button=MouseButton):
+        button = button.value
+        self.button = button
+        self.mouseDetector = MouseDetector()
+
         QWidget.__init__(self)
+
         self.setWindowFlags(
             QtCore.Qt.WindowStaysOnTopHint |
             QtCore.Qt.FramelessWindowHint |
             QtCore.Qt.X11BypassWindowManagerHint |
             QtCore.Qt.ToolTip
         )
-        self.setWindowOpacity(settings['Buttons']['A']['Opacity'])
-        self.setStyleSheet(settings['Buttons']['A']['Style'])
-        self.setGeometry(x, y, 75, 75)
-        self.setDisabled(True)
-        self.setMode(False)
-
-        self.label = QLabel(settings['Buttons']['A']['Text'], self)
-        self.label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.label.setStyleSheet(settings['Buttons']['A']['TextStyle'])
-        self.layout = QGridLayout()
-        self.layout.addWidget(self.label, 0, 0)
-        self.setLayout(self.layout)
-
-        self.wasdDetector = wasdDetector
-
-        self.thread = threading.Thread(target=self.__updateLoop__)
-        self.threadStarted = False
-
-    def __update__(self):
-        self.setMode(self.wasdDetector.isADown())
-
-    def __updateLoop__(self):
-        while True:
-            self.__update__()
-            time.sleep(0.001)
-
-    def startThread(self):
-        self.thread = threading.Thread(target=self.__updateLoop__)
-        self.thread.start()
-        self.threadStarted = True
-
-    def stopThread(self):
-        self.thread.join()
-        self.threadStarted = False
-
-    def setMode(self, mode):
-        if mode:
-            self.setWindowOpacity(settings['Buttons']['A']['OpacityActive'])
-        else:
-            self.setWindowOpacity(settings['Buttons']['A']['Opacity'])
-        self.show()
-
-
-class SKeyFrame(QWidget):
-    def __init__(self, x, y, wasdDetector):
-        QWidget.__init__(self)
-        self.setWindowFlags(
-            QtCore.Qt.WindowStaysOnTopHint |
-            QtCore.Qt.FramelessWindowHint |
-            QtCore.Qt.X11BypassWindowManagerHint |
-            QtCore.Qt.ToolTip
-        )
-        self.setWindowOpacity(settings['Buttons']['S']['Opacity'])
-        self.setStyleSheet(settings['Buttons']['S']['Style'])
-        self.setGeometry(x, y, 75, 75)
-        self.setDisabled(True)
-        self.setMode(False)
-
-        self.label = QLabel(settings['Buttons']['S']['Text'], self)
-        self.label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.label.setStyleSheet(settings['Buttons']['S']['TextStyle'])
-        self.layout = QGridLayout()
-        self.layout.addWidget(self.label, 0, 0)
-        self.setLayout(self.layout)
-
-        self.wasdDetector = wasdDetector
-
-        self.thread = threading.Thread(target=self.__updateLoop__)
-        self.threadStarted = False
-
-    def __update__(self):
-        self.setMode(self.wasdDetector.isSDown())
-
-    def __updateLoop__(self):
-        while True:
-            self.__update__()
-            time.sleep(0.001)
-
-    def startThread(self):
-        self.thread = threading.Thread(target=self.__updateLoop__)
-        self.thread.start()
-        self.threadStarted = True
-
-    def stopThread(self):
-        self.thread.join()
-        self.threadStarted = False
-
-    def setMode(self, mode):
-        if mode:
-            self.setWindowOpacity(settings['Buttons']['S']['OpacityActive'])
-        else:
-            self.setWindowOpacity(settings['Buttons']['S']['Opacity'])
-        self.show()
-
-
-class DKeyFrame(QWidget):
-    def __init__(self, x, y, wasdDetector):
-        QWidget.__init__(self)
-        self.setWindowFlags(
-            QtCore.Qt.WindowStaysOnTopHint |
-            QtCore.Qt.FramelessWindowHint |
-            QtCore.Qt.X11BypassWindowManagerHint |
-            QtCore.Qt.ToolTip
-        )
-        self.setWindowOpacity(settings['Buttons']['D']['Opacity'])
-        self.setStyleSheet(settings['Buttons']['D']['Style'])
-        self.setGeometry(x, y, 75, 75)
-        self.setDisabled(True)
-        self.setMode(False)
-
-        self.label = QLabel(settings['Buttons']['D']['Text'], self)
-        self.label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.label.setStyleSheet(settings['Buttons']['D']['TextStyle'])
-        self.layout = QGridLayout()
-        self.layout.addWidget(self.label, 0, 0)
-        self.setLayout(self.layout)
-
-        self.wasdDetector = wasdDetector
-
-        self.thread = threading.Thread(target=self.__updateLoop__)
-        self.threadStarted = False
-
-    def __update__(self):
-        self.setMode(self.wasdDetector.isDDown())
-
-    def __updateLoop__(self):
-        while True:
-            self.__update__()
-            time.sleep(0.001)
-
-    def startThread(self):
-        self.thread = threading.Thread(target=self.__updateLoop__)
-        self.thread.start()
-        self.threadStarted = True
-
-    def stopThread(self):
-        self.thread.join()
-        self.threadStarted = False
-
-    def setMode(self, mode):
-        if mode:
-            self.setWindowOpacity(settings['Buttons']['D']['OpacityActive'])
-        else:
-            self.setWindowOpacity(settings['Buttons']['D']['Opacity'])
-        self.show()
-
-
-class LeftButtonFrame(QWidget):
-    def __init__(self, x, y, mouseDetector):
-        QWidget.__init__(self)
-        self.setWindowFlags(
-            QtCore.Qt.WindowStaysOnTopHint |
-            QtCore.Qt.FramelessWindowHint |
-            QtCore.Qt.X11BypassWindowManagerHint |
-            QtCore.Qt.ToolTip
-        )
-        self.setWindowOpacity(settings['Buttons']['LeftButton']['Opacity'])
-        self.setStyleSheet(settings['Buttons']['LeftButton']['Style'])
+        self.setWindowOpacity(settings['Buttons'][button]['Opacity'])
+        self.setStyleSheet(settings['Buttons'][button]['Style'])
         self.setGeometry(x, y, 115, 50)
         self.setDisabled(True)
         self.setMode(False)
 
-        self.label = QLabel(settings['Buttons']['LeftButton']['Text'], self)
+        self.label = QLabel(settings['Buttons'][button]['Text'], self)
         self.label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.label.setStyleSheet(settings['Buttons']['LeftButton']['TextStyle'])
+        self.label.setStyleSheet(settings['Buttons'][button]['TextStyle'])
         self.layout = QGridLayout()
         self.layout.addWidget(self.label, 0, 0)
         self.setLayout(self.layout)
-
-        self.mouseDetector = mouseDetector
 
         self.thread = threading.Thread(target=self.__updateLoop__)
         self.threadStarted = False
 
     def __update__(self):
-        self.setMode(self.mouseDetector.isLeftDown())
+        if self.button == MouseButton.Left.value:
+            self.setMode(self.mouseDetector.isLeftDown())
+        else:
+            self.setMode(self.mouseDetector.isRightDown())
 
     def __updateLoop__(self):
         while True:
@@ -408,67 +267,15 @@ class LeftButtonFrame(QWidget):
 
     def setMode(self, mode):
         if mode:
-            self.setWindowOpacity(settings['Buttons']['LeftButton']['OpacityActive'])
+            self.setWindowOpacity(settings['Buttons'][self.button]['OpacityActive'])
         else:
-            self.setWindowOpacity(settings['Buttons']['LeftButton']['Opacity'])
-        self.show()
-
-
-class RightButtonFrame(QWidget):
-    def __init__(self, x, y, mouseDetector):
-        QWidget.__init__(self)
-        self.setWindowFlags(
-            QtCore.Qt.WindowStaysOnTopHint |
-            QtCore.Qt.FramelessWindowHint |
-            QtCore.Qt.X11BypassWindowManagerHint |
-            QtCore.Qt.ToolTip
-        )
-        self.setWindowOpacity(settings['Buttons']['RightButton']['Opacity'])
-        self.setStyleSheet(settings['Buttons']['RightButton']['Style'])
-        self.setGeometry(x, y, 115, 50)
-        self.setDisabled(True)
-        self.setMode(False)
-
-        self.label = QLabel(settings['Buttons']['RightButton']['Text'], self)
-        self.label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.label.setStyleSheet(settings['Buttons']['RightButton']['TextStyle'])
-        self.layout = QGridLayout()
-        self.layout.addWidget(self.label, 0, 0)
-        self.setLayout(self.layout)
-
-        self.mouseDetector = mouseDetector
-
-        self.thread = threading.Thread(target=self.__updateLoop__)
-        self.threadStarted = False
-
-    def __update__(self):
-        self.setMode(self.mouseDetector.isRightDown())
-
-    def __updateLoop__(self):
-        while True:
-            self.__update__()
-            time.sleep(0.001)
-
-    def startThread(self):
-        self.thread = threading.Thread(target=self.__updateLoop__)
-        self.thread.start()
-        self.threadStarted = True
-
-    def stopThread(self):
-        self.thread.join()
-        self.threadStarted = False
-
-    def setMode(self, mode):
-        if mode:
-            self.setWindowOpacity(settings['Buttons']['RightButton']['OpacityActive'])
-        else:
-            self.setWindowOpacity(settings['Buttons']['RightButton']['Opacity'])
+            self.setWindowOpacity(settings['Buttons'][self.button]['Opacity'])
         self.show()
 
 
 class ExitButton(QWidget):
-    def __init__(self, wasdDetector):
+    def __init__(self):
+        self.wasdDetector = WASDDetector()
         QWidget.__init__(self)
 
         if settings['Buttons']['Exit']['TopMost']:
@@ -495,8 +302,6 @@ class ExitButton(QWidget):
         self.layout = QGridLayout()
         self.layout.addWidget(self.button)
         self.setLayout(self.layout)
-
-        self.wasdDetector = wasdDetector
 
         self.thread = threading.Thread(target=self.__updateLoop__)
         self.threadStarted = False
@@ -539,14 +344,11 @@ class ExitButton(QWidget):
 
     @pyqtSlot()
     def onClick(self):
-        print(f"taskkill /f /im \"{__file__}\"")
         os.system(f"taskkill /f /im \"{__file__}\"")
-        print(f"taskkill /f /im \"{os.getpid()}\"")
         os.system(f"taskkill /f /im \"{os.getpid()}\"")
-        print(f"taskkill /f /im \"{os.getppid()}\"")
         os.system(f"taskkill /f /im \"{os.getppid()}\"")
-        print("taskkill /f /im \"python.exe\"")
         os.system("taskkill /f /im \"python.exe\"")
+
 
 def main():
     keyX = 75 + 5
@@ -555,15 +357,15 @@ def main():
     buttonY = 75 + 5
 
     app = QApplication(sys.argv)
-    wPart = WKeyFrame(settingsManager.getXOffset(keyX * 2), settingsManager.getYOffset(keyY), WASDDetector())
-    aPart = AKeyFrame(settingsManager.getXOffset(keyX), settingsManager.getYOffset(keyY * 2), WASDDetector())
-    sPart = SKeyFrame(settingsManager.getXOffset(keyX * 2), settingsManager.getYOffset(keyY * 2), WASDDetector())
-    dPart = DKeyFrame(settingsManager.getXOffset(keyX * 3), settingsManager.getYOffset(keyY * 2), WASDDetector())
-    lbPart = LeftButtonFrame(settingsManager.getXOffset(buttonX - (buttonX - keyX)), settingsManager.getYOffset(buttonY * 3),
-                             MouseDetector())
-    rbPart = RightButtonFrame(settingsManager.getXOffset((buttonX * 2) - (buttonX - keyX)),
-                              settingsManager.getYOffset(buttonY * 3), MouseDetector())
-    exitButton = ExitButton(WASDDetector())
+    wPart = KeyFrame(settingsManager.getXOffset(keyX * 2), settingsManager.getYOffset(keyY), 'w')
+    aPart = KeyFrame(settingsManager.getXOffset(keyX), settingsManager.getYOffset(keyY * 2), 'a')
+    sPart = KeyFrame(settingsManager.getXOffset(keyX * 2), settingsManager.getYOffset(keyY * 2), 's')
+    dPart = KeyFrame(settingsManager.getXOffset(keyX * 3), settingsManager.getYOffset(keyY * 2), 'd')
+    lbPart = ButtonFrame(settingsManager.getXOffset(buttonX - (buttonX - keyX)),
+                         settingsManager.getYOffset(buttonY * 3), MouseButton.Left)
+    rbPart = ButtonFrame(settingsManager.getXOffset((buttonX * 2) - (buttonX - keyX)),
+                         settingsManager.getYOffset(buttonY * 3), MouseButton.Right)
+    exitButton = ExitButton()
 
     wPart.show()
     wPart.startThread()
@@ -582,6 +384,7 @@ def main():
     exitButton.hide()
 
     app.exec_()
+
 
 if __name__ == '__main__':
     main()
