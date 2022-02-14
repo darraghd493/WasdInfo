@@ -63,21 +63,20 @@ def writeDefaultSettings():
     if os.path.isfile(settingsFilePath):
         os.remove(settingsFilePath)
     with open(settingsFilePath, "w") as settingsFile:
-        settingsFile.write(json.dumps(defaultSettings))
+        settingsFile.write(json.dumps(defaultSettings, indent=4))
 
 
 def getSettings():
     if os.path.isfile(settingsFilePath):
         try:
             with open(settingsFilePath, "r") as settingsFile:
-                json.loads(settingsFile.read())
-        except BaseException:
+                return json.loads(settingsFile.read())
+        except FileNotFoundError:
             writeDefaultSettings()
             return defaultSettings
     else:
         writeDefaultSettings()
         return defaultSettings
-    return defaultSettings
 
 
 settings = getSettings()
