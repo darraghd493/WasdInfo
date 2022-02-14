@@ -8,3 +8,6 @@ To use this, simply run the executable (or the `cli.py` file if you are running 
 # How to build
 
 To build this, you will need to install PyInstaller. This can be done with `pip` (apart from Python) by doing `pip install pyinstaller`. Once you have done this simply run `pyinstaller cli.py --name WasdInfo --icon icon.ico --noconfirm --noconsole --onefile` and you should have compiled the Python application.
+
+## Automation
+The automation for building has been removed for now.
