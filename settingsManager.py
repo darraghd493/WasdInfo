@@ -71,6 +71,7 @@ def writeDefaultSettings():
     with open(settingsFilePath, "w") as settingsFile:
         settingsFile.write(json.dumps(defaultSettings, indent=4))
 
+
 def getSettings():
     if os.path.isdir(settingsBaseFolderPath):
         if os.path.isdir(settingsFolderPath):
