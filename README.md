@@ -7,16 +7,4 @@ To use this, simply run the executable (or the `cli.py` file if you are running 
 
 # How to build
 
-To build this, you will need to install PyInstaller. This can be done with `pip` (apart from Python) by doing `pip install pyinstaller`. Once you have done this simply run the `build.bat` file if you are on Windows (as it is easier) or run ```pyinstaller cli.py --noconfirm --onefile --name WasdInfo --icon icon.ico --noconsole``` (add `--paths ./venv/Lib/site-packages` or your path to site-packages if you're using a venv) if you are not (or want to do it yourself).
-
-## Automation note
-
-The .bat build automation files are configures to use a venv. To remove the venv path remove:
-
-```
- --paths ./venv/Lib/site-packages
-```
-
-<br>
-
-To change it just change ` --paths ./venv/Lib/site-packages`.
+To build this, you will need to install PyInstaller. This can be done with `pip` (apart from Python) by doing `pip install pyinstaller`. Once you have done this simply run `pyinstaller cli.py --name WasdInfo --icon icon.ico --noconfirm --noconsole --onefile` and you should have compiled the Python application.
