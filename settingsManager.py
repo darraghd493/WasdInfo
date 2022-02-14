@@ -56,25 +56,34 @@ defaultSettings = {'Body': {
     }
 }}
 
-settingsFilePath = "./settings.json"
+settingsFolderPath = "C:/dogesupremacy/"
+settingsFilePath = settingsFolderPath + "/settings.json"
 
 
 def writeDefaultSettings():
-    if os.path.isfile(settingsFilePath):
-        os.remove(settingsFilePath)
-    with open(settingsFilePath, "w") as settingsFile:
-        settingsFile.write(json.dumps(defaultSettings, indent=4))
+    if not os.path.isdir(settingsFolderPath):
+        os.mkdir(settingsFolderPath)
+    else:
+        if os.path.isfile(settingsFilePath):
+            os.remove(settingsFilePath)
+        with open(settingsFilePath, "w") as settingsFile:
+            settingsFile.write(json.dumps(defaultSettings, indent=4))
 
 
 def getSettings():
-    if os.path.isfile(settingsFilePath):
-        try:
-            with open(settingsFilePath, "r") as settingsFile:
-                return json.loads(settingsFile.read())
-        except FileNotFoundError:
+    if os.path.isdir(settingsFolderPath):
+        if os.path.isfile(settingsFilePath):
+            try:
+                with open(settingsFilePath, "r") as settingsFile:
+                    return json.loads(settingsFile.read())
+            except FileNotFoundError:
+                writeDefaultSettings()
+                return defaultSettings
+        else:
             writeDefaultSettings()
             return defaultSettings
     else:
+        os.mkdir(settingsFolderPath)
         writeDefaultSettings()
         return defaultSettings
 
