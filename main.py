@@ -21,12 +21,6 @@ class MouseButton(enum.Enum):
 
 
 class MouseDetector:
-    def __init__(self):
-        self.leftDown = win32api.GetKeyState(0x01)
-        self.rightDown = win32api.GetKeyState(0x02)
-        self.thread = threading.Thread(target=self.__updateLoop__)
-        self.threadStarted = False
-
     @staticmethod
     def __convertButtonState__(state):
         if state < 0:
@@ -34,52 +28,14 @@ class MouseDetector:
         else:
             return False
 
-    def __update__(self):
-        leftState = win32api.GetKeyState(0x01)
-        rightState = win32api.GetKeyState(0x02)
-
-        if not leftState == self.leftDown:
-            self.leftDown = leftState
-
-        if not rightState == self.rightDown:
-            self.rightDown = rightState
-
-    def __updateLoop__(self):
-        while True:
-            self.__update__()
-            time.sleep(0.001)
-
-    def startThread(self):
-        self.thread = threading.Thread(target=self.__updateLoop__)
-        self.thread.start()
-        self.threadStarted = True
-
-    def stopThread(self):
-        self.thread.join()
-        self.threadStarted = False
-
     def isLeftDown(self):
-        if self.threadStarted:
-            return self.__convertButtonState__(self.leftDown)
-        else:
-            return self.__convertButtonState__(win32api.GetKeyState(0x01))
+        return self.__convertButtonState__(win32api.GetKeyState(0x01))
 
     def isRightDown(self):
-        if self.threadStarted:
-            return self.__convertButtonState__(self.rightDown)
-        else:
-            return self.__convertButtonState__(win32api.GetKeyState(0x02))
+        return self.__convertButtonState__(win32api.GetKeyState(0x02))
 
 
 class WASDDetector:
-    def __init__(self):
-        self.wDown = False
-        self.aDown = False
-        self.sDown = False
-        self.dDown = False
-        self.thread = threading.Thread(target=self.__updateLoop__)
-        self.threadStarted = False
-
     @staticmethod
     def __equalCheck__(character):
         lowerCharacter = character.lower()
@@ -98,61 +54,17 @@ class WASDDetector:
         else:
             return False
 
-    def __update__(self):
-        wState = self.__equalCheck__('w')
-        aState = self.__equalCheck__('a')
-        sState = self.__equalCheck__('s')
-        dState = self.__equalCheck__('d')
-
-        if not wState == self.wDown:
-            self.wDown = wState
-
-        if not aState == self.aDown:
-            self.aDown = aState
-
-        if not sState == self.sDown:
-            self.sDown = sState
-
-        if not dState == self.dDown:
-            self.dDown = dState
-
-    def __updateLoop__(self):
-        while True:
-            self.__update__()
-            time.sleep(0.001)
-
-    def startThread(self):
-        self.thread = threading.Thread(target=self.__updateLoop__)
-        self.thread.start()
-        self.threadStarted = True
-
-    def stopThread(self):
-        self.thread.join()
-        self.threadStarted = False
-
     def isWDown(self):
-        if self.threadStarted:
-            return self.__convertButtonState__(self.wDown)
-        else:
-            return self.__convertButtonState__(self.__equalCheck__('w'))
+        return self.__convertButtonState__(self.__equalCheck__('w'))
 
     def isADown(self):
-        if self.threadStarted:
-            return self.__convertButtonState__(self.aDown)
-        else:
-            return self.__convertButtonState__(self.__equalCheck__('a'))
+        return self.__convertButtonState__(self.__equalCheck__('a'))
 
     def isSDown(self):
-        if self.threadStarted:
-            return self.__convertButtonState__(self.sDown)
-        else:
-            return self.__convertButtonState__(self.__equalCheck__('s'))
+        return self.__convertButtonState__(self.__equalCheck__('s'))
 
     def isDDown(self):
-        if self.threadStarted:
-            return self.__convertButtonState__(self.dDown)
-        else:
-            return self.__convertButtonState__(self.__equalCheck__('d'))
+        return self.__convertButtonState__(self.__equalCheck__('d'))
 
     def isWhatDown(self, character):
         return self.__convertButtonState__(self.__equalCheck__(character))
@@ -215,7 +127,7 @@ class KeyFrame(QWidget):
 
 
 class ButtonFrame(QWidget):
-    def __init__(self, x, y, button=MouseButton):
+    def __init__(self, x, y, button):
         button = button.value
         self.button = button
         self.mouseDetector = MouseDetector()
