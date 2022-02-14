@@ -56,16 +56,20 @@ defaultSettings = {"Body": {
     }
 }}
 
-settingsBaseFolderPath = "C:/dogesupremacy/"
-settingsFolderPath = settingsBaseFolderPath + "WasdInfo/"
+settingsFolderPath = "C:/dogesupremacy/WasdInfo/"
 settingsFilePath = settingsFolderPath + "/settings.json"
 
 
 def writeDefaultSettings():
-    if not os.path.isdir(settingsBaseFolderPath):
-        os.mkdir(settingsBaseFolderPath)
-    if not os.path.isdir(settingsFolderPath):
-        os.mkdir(settingsFolderPath)
+    folders = settingsFolderPath.split("/")
+    folders.pop(0)
+
+    currentFolder = "C:/"
+    for newFolder in folders:
+        currentFolder += newFolder + "/"
+        if not os.path.isdir(currentFolder):
+            os.mkdir(currentFolder)
+
     if os.path.isfile(settingsFilePath):
         os.remove(settingsFilePath)
     with open(settingsFilePath, "w") as settingsFile:
