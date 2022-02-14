@@ -1,12 +1,12 @@
 setup(
     name="WasdInfo",
-    version="1.0.0",
+    version="1.0.1",
     description="WasdInfo displays weather you are pressing your WASD keys and/or left and right mouse buttons onto your screen through PyQt5 (Python wrapper for Qt5).",
     long_description="README.MD",
     long_description_content_type="text/markdown",
-    url="https://github.com/dogesupremacy/wasdInfo",
+    url="https://github.com/dogesupremacy/WasdInfo",
     author="dogesupremacy",
-    author_email="Removed for privacy",
+    author_email="darragh@dowsetts.org",
     license="GNU General Public License (GPL)",
     classifiers=[
         "License :: OSI Approved :: GNU General Public License (GPL)",
