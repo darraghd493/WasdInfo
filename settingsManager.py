@@ -1,10 +1,10 @@
 import os
 import json
 
-defaultSettings = {'Body': {
+defaultSettings = {"Body": {
     "X": 75,
     "Y": 75
-}, 'Buttons': {
+}, "Buttons": {
     "W": {
         "Style": "background-color: rgb(22, 22, 22);",
         "TextStyle": "color: rgb(225, 225, 225);font-size:18px;",
