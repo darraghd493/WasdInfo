@@ -77,19 +77,11 @@ def writeDefaultSettings():
 
 
 def getSettings():
-    if os.path.isdir(settingsBaseFolderPath):
-        if os.path.isdir(settingsFolderPath):
-            if os.path.isfile(settingsFilePath):
-                try:
-                    with open(settingsFilePath, "r") as settingsFile:
-                        return json.loads(settingsFile.read())
-                except FileNotFoundError:
-                    writeDefaultSettings()
-                    return defaultSettings
-            else:
-                writeDefaultSettings()
-                return defaultSettings
-        else:
+    if os.path.isdir(settingsFolderPath):
+        try:
+            with open(settingsFilePath, "r") as settingsFile:
+                return json.loads(settingsFile.read())
+        except FileNotFoundError:
             writeDefaultSettings()
             return defaultSettings
     else:
