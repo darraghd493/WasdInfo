@@ -1,6 +1,6 @@
 setup(
     name="WasdInfo",
-    version="1.0.4",
+    version="1.0.5",
     description="WasdInfo displays weather you are pressing your WASD keys and/or left and right mouse buttons onto your screen through PyQt5 (Python wrapper for Qt5).",
     long_description="README.MD",
     long_description_content_type="text/markdown",
