@@ -13,9 +13,6 @@ settings = settingsManager.getSettings()
 
 
 class MouseButton(enum.Enum):
-    def __str__(self):
-        return str(self.value)
-
     Left = "LeftButton"
     Right = "RightButton"
 
