@@ -183,7 +183,7 @@ class KeyFrame(QWidget):
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setStyleSheet(settings['Buttons'][letter]['TextStyle'])
         self.layout = QGridLayout()
-        self.layout.addWidget(self.label, 0, 0)
+        self.layout.addWidget(self.label)
         self.setLayout(self.layout)
 
         self.thread = threading.Thread(target=self.__updateLoop__)
@@ -239,7 +239,7 @@ class ButtonFrame(QWidget):
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setStyleSheet(settings['Buttons'][button]['TextStyle'])
         self.layout = QGridLayout()
-        self.layout.addWidget(self.label, 0, 0)
+        self.layout.addWidget(self.label)
         self.setLayout(self.layout)
 
         self.thread = threading.Thread(target=self.__updateLoop__)
